@@ -207,8 +207,8 @@ function serve(index) {
     return;
   }
   const matchesOrder = glass.size === guest.recipe.mix.length && guest.recipe.mix.every((key) => glass.has(key));
-  emptyGlass();
   if (matchesOrder) {
+    emptyGlass();
     served++;
     streak++;
     const speedBonus = Math.floor(guest.expires - now < 0 ? 0 : 4 * (guest.expires - now) / guest.patience);
@@ -221,7 +221,7 @@ function serve(index) {
   } else {
     streak = 0;
     tips = Math.max(0, tips - 3);
-    feedback("Wrong drink. " + guest.person + " is still waiting.", "bad");
+    feedback("Wrong drink for " + guest.person + ". Your cocktail is still in the glass.", "bad");
     tone(150, .15, .032, "triangle", 94);
   }
   updateStats();
@@ -375,6 +375,7 @@ function pauseShift() {
   music.pause();
   if (audio?.state === "running") audio.suspend().catch(() => {});
   get("menu").open = false;
+  get("pause-clock").textContent = get("clock").textContent;
   pauseDialog.showModal();
 }
 

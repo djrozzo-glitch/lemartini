@@ -9,10 +9,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="bar.css?v=2">
+<link rel="stylesheet" href="bar.css?v=3">
 <script defer src="bar-assets.js?v=2"></script>
 <script defer src="leaderboard.js?v=2"></script>
-<script defer src="bar.js?v=2"></script>
+<script defer src="bar.js?v=3"></script>
 </head>
 <body>
 <main>
@@ -63,8 +63,14 @@
   </section>
   <footer><span>LE MARTINI</span><span>DEEP HOUSE <span class="dot"></span> 124 BPM</span></footer>
   <dialog id="pause-dialog" aria-labelledby="pause-title">
-    <h2 id="pause-title">Shift paused</h2>
-    <button class="primary" id="resume" autofocus>Resume</button>
+    <div class="pause-content">
+      <div>
+        <h2 id="pause-title" tabindex="-1" autofocus>Shift paused</h2>
+        <p class="pause-time"><strong id="pause-clock"></strong> remaining</p>
+      </div>
+      <img class="pause-drink" src="assets/cocktails/le-martini.png" alt="" width="256" height="256">
+    </div>
+    <button class="primary" id="resume"><span class="play-mark" aria-hidden="true"></span>Resume shift</button>
   </dialog>
   <dialog id="leaderboard-dialog" aria-labelledby="leaderboard-title">
     <div class="dialog-heading">
