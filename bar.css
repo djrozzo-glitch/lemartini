@@ -7,11 +7,20 @@ button,summary{font:inherit;color:inherit;cursor:pointer;touch-action:manipulati
 button:disabled{cursor:default;opacity:.48}
 button:focus-visible,summary:focus-visible{outline:3px solid var(--success);outline-offset:4px}
 .masthead,footer{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:15px}
-.masthead{height:75px}
+.masthead{min-height:75px;padding:10px 0;justify-content:flex-start}
+.mast-track{flex:1;min-width:0;display:grid;gap:3px}
+.mast-track strong{font:400 30px/1 var(--serif)}
+.track-label{color:var(--muted);font:500 11px/1.35 var(--mono)}
+#music-status{color:var(--warning)}
+.mast-actions{flex:none;display:flex;align-items:center;gap:8px}
+.mast-actions .quiet,.stream-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;white-space:nowrap}
+.stream-link{display:inline-block;padding:12px 11px;border:1px solid #8b6a48;color:var(--gold);text-decoration:none;font-weight:700;font-size:13px;line-height:18px}
+.stream-link:hover{background:#30251c}
+.stream-link:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .wordmark{font:italic 40px/1 var(--serif);letter-spacing:-3px}
 .wordmark span{color:var(--gold)}
-.mast-label,footer,.eyebrow{font:500 11px/1.4 var(--mono);letter-spacing:.15em}
-.mast-label,.eyebrow,footer{color:var(--muted)}
+footer,.eyebrow{font:500 11px/1.4 var(--mono);letter-spacing:.15em}
+.eyebrow,footer{color:var(--muted)}
 .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);margin:0 10px 2px}
 .eyebrow .dot{margin-left:0}
 .quiet{border:1px solid var(--line);background:var(--panel);padding:8px 13px;min-height:38px;font-size:13px}
@@ -74,12 +83,11 @@ footer .dot{margin:0 5px 2px}
 .results{text-align:center;padding:75px 12px 85px}
 .results h2{color:var(--gold);margin:18px 0 26px}
 .results p:not(.eyebrow){font-size:17px;margin-bottom:25px}
-@media(max-width:720px){main{width:calc(100% - 28px)}.intro{grid-template-columns:1fr;gap:25px;padding:26px 0}.intro-copy{padding:0 0 0 3px}h1{font-size:clamp(70px,15vw,110px);margin:17px 0 14px}.pitch{font-size:15px;margin-bottom:18px}body{background-image:linear-gradient(#0b0e14bd,#0b0e14df),url("assets/backgrounds/night-bar-mobile.webp");background-attachment:scroll}.poster{width:min(100%,52vh,370px)}.masthead{height:54px}.mast-label{font-size:9px;letter-spacing:.09em}.wordmark{font-size:31px}footer{min-height:43px}.guest strong{font-size:21px}.guest{padding:7px 5px 12px;min-height:138px}.guest-art{height:62px}.ingredient{flex-direction:column;gap:0;font-size:11px;min-height:51px}.ingredient-image{width:31px;height:31px}.stats strong{font-size:30px}}
-@media(max-width:365px){.mast-label .dot{margin:0 4px 1px}.ingredient{font-size:11px}.guest small{font-size:10px}.guest strong{font-size:19px}}
+@media(max-width:720px){main{width:calc(100% - 28px)}.intro{grid-template-columns:1fr;gap:25px;padding:26px 0}.intro-copy{padding:0 0 0 3px}h1{font-size:clamp(70px,15vw,110px);margin:17px 0 14px}.pitch{font-size:15px;margin-bottom:18px}body{background-image:linear-gradient(#0b0e14bd,#0b0e14df),url("assets/backgrounds/night-bar-mobile.webp");background-attachment:scroll}.poster{width:min(100%,52vh,370px)}.masthead{min-height:65px;gap:10px}.mast-track strong{font-size:24px}.track-label{font-size:10px}.mast-actions{gap:6px}.mast-actions .quiet{padding-inline:8px}.stream-detail{display:none}.wordmark{font-size:31px}footer{min-height:43px}.guest strong{font-size:21px}.guest{padding:7px 5px 12px;min-height:138px}.guest-art{height:62px}.ingredient{flex-direction:column;gap:0;font-size:11px;min-height:51px}.ingredient-image{width:31px;height:31px}.stats strong{font-size:30px}}
+@media(max-width:365px){.masthead .wordmark{display:none}.ingredient{font-size:11px}.guest small{font-size:10px}.guest strong{font-size:19px}}
 @media(min-width:721px){.ingredients{grid-template-columns:repeat(5,minmax(0,1fr))}}
 
 .stats{grid-template-columns:repeat(3,minmax(0,1fr)) auto auto}
-.now-playing{margin:-4px 2px 12px;font:500 11px/1.4 var(--mono);color:var(--muted)}
 [data-leaderboard]{margin:5px 0 0 4px}
 dialog{width:min(440px,calc(100% - 30px));max-height:85vh;padding:20px;margin:auto;color:var(--cream);background:var(--panel);border:1px solid var(--line)}
 dialog::backdrop{background:#07090dcf}

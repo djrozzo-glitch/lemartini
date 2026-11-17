@@ -42,11 +42,13 @@ let pausedAt = null;
 let pausedDuration = 0;
 const gameTime = () => (pausedAt ?? performance.now()) - pausedDuration;
 const tracks = [
-  ["Le Martini", "rozzo – le martini [See the Sea Records].mp3"],
-  ["No But No", "rozzo – no but no [See the Sea Records].mp3"],
+  { title: "Le Martini", label: "See the Sea Records", file: "rozzo – le martini [See the Sea Records].mp3" },
+  { title: "No But No", label: "See the Sea Records", file: "rozzo – no but no [See the Sea Records].mp3" },
 ];
 const music = get("music");
 const nowPlaying = get("now-playing");
+const trackLabel = get("track-label");
+const musicStatus = get("music-status");
 const soundButton = get("sound");
 let soundOn = true;
 let audio;
@@ -325,11 +327,13 @@ function tone(from, duration, volume, type, to, at = audio?.currentTime) {
 
 function pickTrack(index) {
   trackIndex = index;
-  const [title, file] = tracks[index];
+  const { title, label, file } = tracks[index];
   const source = "audio/" + encodeURIComponent(file);
   if (music.getAttribute("src") !== source) music.src = source;
   else music.currentTime = 0;
-  nowPlaying.textContent = "Rozzo · " + title;
+  nowPlaying.textContent = title;
+  trackLabel.textContent = "Rozzo · " + label;
+  musicStatus.hidden = true;
 }
 
 function playSound() {
@@ -341,7 +345,7 @@ function playSound() {
   }
   music.play().catch((error) => {
     if (error.name !== "AbortError" && soundOn && phase === "game" && pausedAt === null && music.paused) {
-      nowPlaying.textContent = "Tap Sound to start music";
+      musicStatus.hidden = false;
       soundOn = false;
       updateSoundButton();
     }
@@ -354,7 +358,7 @@ function updateSoundButton() {
 }
 
 music.addEventListener("playing", () => {
-  nowPlaying.textContent = "Rozzo · " + tracks[trackIndex][0];
+  musicStatus.hidden = true;
 });
 music.addEventListener("ended", () => {
   pickTrack((trackIndex + 1) % tracks.length);
