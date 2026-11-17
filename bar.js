@@ -25,15 +25,16 @@ const menuStages = [
 ];
 const regulars = Object.keys(barAssets.guests);
 const get = (id) => document.getElementById(id);
-const shiftLength = 90_000;
-const bestKey = "le-martini-best";
+const rankedShiftLength = 90_000;
+const recordKeys = { ranked: "le-martini-best", endless: "le-martini-endless-best" };
 const slots = Array(3).fill(null);
 const guestButtons = [];
 const ingredientButtons = new Map();
 const glass = new Set();
 const orderedRecipes = new Set();
 let phase = "intro";
-let tips = 0, streak = 0, served = 0, walked = 0, best = 0;
+let ranked = false;
+let tips = 0, streak = 0, served = 0, walked = 0;
 let shiftStart = 0, nextGuest = 0, frame = 0;
 let lastClock = -1;
 let menuStage = 0;
@@ -55,11 +56,17 @@ let audio;
 let trackIndex = 0;
 let shiftCount = 0;
 music.volume = .48;
-try { best = Number(localStorage.getItem(bestKey)) || 0; } catch {}
-if (best) {
-  get("intro-best").textContent = "House record $" + best;
-  get("intro-best").hidden = false;
+function bestFor(key) {
+  try { return Number(localStorage.getItem(key)) || 0; } catch { return 0; }
 }
+
+function showEndlessBest() {
+  const best = bestFor(recordKeys.endless);
+  get("intro-best").textContent = "Endless record $" + best;
+  get("intro-best").hidden = !best;
+}
+
+showEndlessBest();
 
 function sprite(source, className) {
   const image = document.createElement("img");
@@ -237,10 +244,10 @@ function tick() {
   if (nextStage && elapsed >= nextStage.start) {
     setMenuStage(menuStages.findLastIndex((stage) => elapsed >= stage.start));
   }
-  const seconds = Math.ceil((shiftLength - elapsed) / 1000);
+  const seconds = ranked ? Math.ceil((rankedShiftLength - elapsed) / 1000) : Math.floor(elapsed / 1000);
   if (seconds !== lastClock) {
     get("clock").textContent = Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2,"0");
-    get("clock").classList.toggle("urgent", seconds <= 10);
+    get("clock").classList.toggle("urgent", ranked && seconds <= 10);
     lastClock = seconds;
   }
   slots.forEach((guest, index) => {
@@ -259,14 +266,15 @@ function tick() {
 
 function shiftOpen(now = gameTime()) {
   if (phase !== "game" || pausedAt !== null) return false;
-  if (now >= shiftStart + shiftLength) {
+  if (ranked && now >= shiftStart + rankedShiftLength) {
     finish();
     return false;
   }
   return true;
 }
 
-function begin() {
+function begin(rankedShift) {
+  ranked = rankedShift;
   tips = streak = served = walked = 0;
   lastClock = -1;
   orderedRecipes.clear();
@@ -280,6 +288,8 @@ function begin() {
   get("intro").hidden = true;
   get("results").hidden = true;
   get("game").hidden = false;
+  get("clock-label").textContent = ranked ? "TIME LEFT" : "TIME OPEN";
+  get("close-bar").hidden = ranked;
   phase = "game";
   pausedAt = null;
   pausedDuration = 0;
@@ -289,7 +299,7 @@ function begin() {
   pickTrack(shiftCount % tracks.length);
   shiftCount++;
   playSound();
-  leaderboard.begin();
+  leaderboard.begin(ranked);
   tick();
   ingredientButtons.get("gin").focus({ preventScroll: true });
 }
@@ -298,11 +308,15 @@ function finish() {
   phase = "results";
   cancelAnimationFrame(frame);
   music.pause();
-  leaderboard.finish(tips);
-  const newBest = tips > best;
-  best = Math.max(best, tips);
-  try { localStorage.setItem(bestKey, String(best)); } catch {}
-  get("record").textContent = (newBest ? "NEW HOUSE RECORD" : "HOUSE RECORD") + " · $" + best;
+  if (ranked) leaderboard.finish(tips);
+  const key = ranked ? recordKeys.ranked : recordKeys.endless;
+  const priorBest = bestFor(key);
+  const newBest = tips > priorBest;
+  if (newBest) {
+    try { localStorage.setItem(key, String(tips)); } catch {}
+  }
+  const recordLabel = ranked ? "CHALLENGE RECORD" : "ENDLESS RECORD";
+  get("record").textContent = (newBest ? "NEW " : "") + recordLabel + " · $" + Math.max(priorBest, tips);
   get("summary").textContent = "$" + tips + " in tips · " + served + " served · " + walked + " walked out";
   get("game").hidden = true;
   get("results").hidden = false;
@@ -380,6 +394,7 @@ function pauseShift() {
   if (audio?.state === "running") audio.suspend().catch(() => {});
   get("menu").open = false;
   get("pause-clock").textContent = get("clock").textContent;
+  get("pause-clock-label").textContent = ranked ? "remaining" : "open";
   pauseDialog.showModal();
 }
 
@@ -394,6 +409,12 @@ function resumeShift() {
 
 get("pause").addEventListener("click", pauseShift);
 get("resume").addEventListener("click", resumeShift);
+get("close-bar").addEventListener("click", () => {
+  if (ranked || pausedAt === null) return;
+  pausedAt = null;
+  pauseDialog.close();
+  finish();
+});
 pauseDialog.addEventListener("cancel", (event) => {
   event.preventDefault();
   resumeShift();
@@ -403,5 +424,13 @@ get("clear").addEventListener("click", () => {
   emptyGlass();
   ingredientButtons.get("gin").focus({ preventScroll: true });
 });
-get("start").addEventListener("click", begin);
-get("retry").addEventListener("click", begin);
+get("start").addEventListener("click", () => begin(false));
+get("challenge").addEventListener("click", () => begin(true));
+get("retry").addEventListener("click", () => begin(ranked));
+get("main-menu").addEventListener("click", () => {
+  phase = "intro";
+  get("results").hidden = true;
+  get("intro").hidden = false;
+  showEndlessBest();
+  get("start").focus({ preventScroll: true });
+});

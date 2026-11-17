@@ -85,7 +85,11 @@ const leaderboard = (() => {
   });
 
   return {
-    begin() {
+    begin(ranked = true) {
+      if (!ranked) {
+        current = null;
+        return;
+      }
       const run = { token: null, score: 0, posted: false, pending: false };
       current = run;
       request("/run", {}).then(({ token }) => { run.token = token; }).catch(() => {});

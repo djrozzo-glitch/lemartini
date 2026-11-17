@@ -4,15 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#11151b">
-<meta name="description" content="A 90-second cocktail game, set to the tempo of Le Martini.">
+<meta name="description" content="Mix drinks to Rozzo’s Le Martini in an endless shift or take on the 90-second leaderboard challenge.">
 <title>Le Martini · Behind the Bar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="bar.css?v=4">
+<link rel="stylesheet" href="bar.css?v=5">
 <script defer src="bar-assets.js?v=2"></script>
-<script defer src="leaderboard.js?v=2"></script>
-<script defer src="bar.js?v=4"></script>
+<script defer src="leaderboard.js?v=3"></script>
+<script defer src="bar.js?v=5"></script>
 </head>
 <body>
 <main>
@@ -32,9 +32,12 @@
     <div class="intro-copy">
       <p class="eyebrow"><span class="dot"></span> THE 124 BPM BARTENDING GAME</p>
       <h1>Le <em>Martini</em></h1>
-      <p class="pitch">Ninety seconds behind the bar. Mix the orders, serve the right guests and keep the tips coming.</p>
-      <button class="primary" id="start">Open the bar <span aria-hidden="true">↗</span></button>
-      <button class="quiet" data-leaderboard>Leaderboard</button>
+      <p class="pitch">Mix drinks and keep the tips coming for as long as you like.</p>
+      <div class="mode-actions">
+        <button class="primary" id="start">Open the bar <span aria-hidden="true">↗</span></button>
+        <button class="quiet" id="challenge">90-second challenge</button>
+        <button class="quiet" data-leaderboard>Leaderboard</button>
+      </div>
       <p class="best" id="intro-best" hidden></p>
     </div>
     <figure class="poster">
@@ -43,7 +46,7 @@
   </section>
   <section id="game" hidden aria-label="Bartending game">
     <div class="stats">
-      <div><span class="eyebrow">SHIFT</span><strong id="clock">1:30</strong></div>
+      <div><span class="eyebrow" id="clock-label">TIME OPEN</span><strong id="clock">0:00</strong></div>
       <div><span class="eyebrow">TIPS</span><strong id="score">$0</strong></div>
       <div><span class="eyebrow">STREAK</span><strong id="streak">0</strong></div>
       <button class="quiet" id="pause">Pause</button>
@@ -65,6 +68,7 @@
     <h2>Last call.</h2>
     <p id="summary"></p>
     <button class="primary" id="retry">Play again <span aria-hidden="true">↗</span></button>
+    <button class="quiet" id="main-menu">Main menu</button>
     <button class="quiet" data-leaderboard>Leaderboard</button>
   </section>
   <footer><span>LE MARTINI</span><span>DEEP HOUSE <span class="dot"></span> 124 BPM</span></footer>
@@ -72,11 +76,12 @@
     <div class="pause-content">
       <div>
         <h2 id="pause-title" tabindex="-1" autofocus>Shift paused</h2>
-        <p class="pause-time"><strong id="pause-clock"></strong> remaining</p>
+        <p class="pause-time"><strong id="pause-clock"></strong> <span id="pause-clock-label"></span></p>
       </div>
       <img class="pause-drink" src="assets/cocktails/le-martini.png" alt="" width="256" height="256">
     </div>
     <button class="primary" id="resume"><span class="play-mark" aria-hidden="true"></span>Resume shift</button>
+    <button class="quiet" id="close-bar" hidden>Close the bar</button>
   </dialog>
   <dialog id="leaderboard-dialog" aria-labelledby="leaderboard-title">
     <div class="dialog-heading">

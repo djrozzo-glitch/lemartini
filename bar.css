@@ -89,6 +89,9 @@ footer .dot{margin:0 5px 2px}
 
 .stats{grid-template-columns:repeat(3,minmax(0,1fr)) auto auto}
 [data-leaderboard]{margin:5px 0 0 4px}
+.mode-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mode-actions .quiet{min-height:44px;margin:0}
+#close-bar{display:block;width:100%;margin-top:8px;border-radius:8px}
 dialog{width:min(440px,calc(100% - 30px));max-height:85vh;padding:20px;margin:auto;color:var(--cream);background:var(--panel);border:1px solid var(--line)}
 dialog::backdrop{background:#07090dcf}
 dialog h2{font:36px/1 var(--serif);margin:0}
