@@ -77,3 +77,24 @@ footer .dot{margin:0 5px 2px}
 @media(max-width:720px){main{width:calc(100% - 28px)}.intro{grid-template-columns:1fr;gap:25px;padding:26px 0}.intro-copy{padding:0 0 0 3px}h1{font-size:clamp(70px,15vw,110px);margin:17px 0 14px}.pitch{font-size:15px;margin-bottom:18px}body{background-image:linear-gradient(#0b0e14bd,#0b0e14df),url("assets/backgrounds/night-bar-mobile.webp");background-attachment:scroll}.poster{width:min(100%,52vh,370px)}.masthead{height:54px}.mast-label{font-size:9px;letter-spacing:.09em}.wordmark{font-size:31px}footer{min-height:43px}.guest strong{font-size:21px}.guest{padding:7px 5px 12px;min-height:138px}.guest-art{height:62px}.ingredient{flex-direction:column;gap:0;font-size:11px;min-height:51px}.ingredient-image{width:31px;height:31px}.stats strong{font-size:30px}}
 @media(max-width:365px){.mast-label .dot{margin:0 4px 1px}.ingredient{font-size:11px}.guest small{font-size:10px}.guest strong{font-size:19px}}
 @media(min-width:721px){.ingredients{grid-template-columns:repeat(5,minmax(0,1fr))}}
+
+.stats{grid-template-columns:repeat(3,minmax(0,1fr)) auto auto}
+.now-playing{margin:-4px 2px 12px;font:500 11px/1.4 var(--mono);color:var(--muted)}
+[data-leaderboard]{margin:5px 0 0 4px}
+dialog{width:min(440px,calc(100% - 30px));max-height:85vh;padding:20px;margin:auto;color:var(--cream);background:var(--panel);border:1px solid var(--line)}
+dialog::backdrop{background:#07090dcf}
+dialog h2{font:36px/1 var(--serif);margin:0}
+#pause-dialog{text-align:center}
+#pause-dialog h2{margin-bottom:20px}
+.dialog-heading,.score-controls,#leaderboard-entries li{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#leaderboard-entries{list-style:none;margin:0;padding:0;counter-reset:rank}
+#leaderboard-entries li{counter-increment:rank;border-bottom:1px solid var(--line);padding:8px 0;overflow-wrap:anywhere}
+#leaderboard-entries li::before{content:counter(rank);color:var(--gold);width:22px;font-family:var(--mono)}
+#leaderboard-entries li span{flex:1;min-width:0}
+#leaderboard-entries li strong{font-family:var(--mono)}
+#score-form{margin-top:20px}
+#score-form label{display:block;margin-bottom:5px}
+#nickname{flex:1;min-width:0;background:var(--bg);color:var(--cream);border:1px solid var(--line);padding:9px;font:inherit}
+#submit-score{padding:9px 13px;min-width:0}
+#score-status,#leaderboard-status{font-size:13px;color:var(--muted)}
+@media(max-width:450px){.stats{gap:6px}.stats .quiet{padding:6px;font-size:11px}.stats .eyebrow{font-size:9px}.stats strong{font-size:26px}}

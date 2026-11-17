@@ -9,16 +9,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="bar.css">
-<script defer src="bar-assets.js"></script>
-<script defer src="bar.js"></script>
+<link rel="stylesheet" href="bar.css?v=2">
+<script defer src="bar-assets.js?v=2"></script>
+<script defer src="leaderboard.js?v=2"></script>
+<script defer src="bar.js?v=2"></script>
 </head>
 <body>
 <main>
   <header class="masthead">
     <span class="wordmark">LM<span>.</span></span>
     <span class="mast-label">LE MARTINI<span class="dot"></span>BEHIND THE BAR</span>
-    <button id="sound" class="quiet" aria-pressed="false">Sound off</button>
+    <button id="sound" class="quiet" aria-pressed="true">Sound on</button>
   </header>
   <section id="intro" class="intro">
     <div class="intro-copy">
@@ -26,6 +27,7 @@
       <h1>Le <em>Martini</em></h1>
       <p class="pitch">Ninety seconds behind the bar. Mix the orders, serve the right guests and keep the tips coming.</p>
       <button class="primary" id="start">Open the bar <span aria-hidden="true">↗</span></button>
+      <button class="quiet" data-leaderboard>Leaderboard</button>
       <p class="best" id="intro-best" hidden></p>
     </div>
     <figure class="poster">
@@ -37,8 +39,10 @@
       <div><span class="eyebrow">SHIFT</span><strong id="clock">1:30</strong></div>
       <div><span class="eyebrow">TIPS</span><strong id="score">$0</strong></div>
       <div><span class="eyebrow">STREAK</span><strong id="streak">0</strong></div>
+      <button class="quiet" id="pause">Pause</button>
       <details id="menu"><summary class="quiet">Recipe card</summary><div id="recipes"></div></details>
     </div>
+    <p class="now-playing" id="now-playing"></p>
     <section class="counter" aria-labelledby="guests-label">
       <div class="section-label"><h2 class="eyebrow" id="guests-label">AT THE BAR</h2><span>Tap a guest to serve</span></div>
       <div id="guests" class="guests"></div>
@@ -55,8 +59,30 @@
     <h2>Last call.</h2>
     <p id="summary"></p>
     <button class="primary" id="retry">Play again <span aria-hidden="true">↗</span></button>
+    <button class="quiet" data-leaderboard>Leaderboard</button>
   </section>
   <footer><span>LE MARTINI</span><span>DEEP HOUSE <span class="dot"></span> 124 BPM</span></footer>
+  <dialog id="pause-dialog" aria-labelledby="pause-title">
+    <h2 id="pause-title">Shift paused</h2>
+    <button class="primary" id="resume" autofocus>Resume</button>
+  </dialog>
+  <dialog id="leaderboard-dialog" aria-labelledby="leaderboard-title">
+    <div class="dialog-heading">
+      <h2 id="leaderboard-title">Leaderboard</h2>
+      <form method="dialog"><button class="quiet" autofocus>Close</button></form>
+    </div>
+    <p id="leaderboard-status" role="status"></p>
+    <ol id="leaderboard-entries"></ol>
+    <form id="score-form" hidden>
+      <label for="nickname">Nickname</label>
+      <div class="score-controls">
+        <input id="nickname" name="nickname" maxlength="24" autocomplete="nickname" required>
+        <button class="primary" id="submit-score">Post score</button>
+      </div>
+      <p id="score-status" role="status"></p>
+    </form>
+  </dialog>
+  <audio id="music" preload="none"></audio>
 </main>
 </body>
 </html>

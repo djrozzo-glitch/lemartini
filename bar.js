@@ -3,38 +3,24 @@
 const ingredients = {
   gin: ["Gin", "#b8cddb"], vermouth: ["Vermouth", "#e7cf8b"],
   olive: ["Olive", "#bfc969"], campari: ["Campari", "#f38488"],
-  vodka: ["Vodka", "#b5a8e0"], coffee: ["Coffee", "#bf8e70"],
-  lime: ["Lime", "#c7de91"], soda: ["Soda", "#8bd8ca"],
-  grenadine: ["Grenadine", "#ee5373"], tabasco: ["Tabasco", "#ff8d60"],
-  tequila: ["Tequila", "#eac582"], orange: ["Orange Juice", "#ffab61"],
-  rum: ["Rum", "#d59c7b"], cola: ["Cola", "#b28576"],
-  tripleSec: ["Triple Sec", "#ffc67f"], whiskey: ["Whiskey", "#d6a163"],
-  lemon: ["Lemon", "#f1de8f"], syrup: ["Syrup", "#ecc6db"],
-  gingerBeer: ["Ginger Beer", "#d9bc75"], tonic: ["Tonic", "#acded8"],
-  energy: ["Energy Drink", "#d9ed87"],
+  vodka: ["Vodka", "#b5a8e0"], grenadine: ["Grenadine", "#ee5373"],
+  tabasco: ["Tabasco", "#ff8d60"], whiskey: ["Whiskey", "#d6a163"],
+  tequila: ["Tequila", "#eac582"], rum: ["Rum", "#d59c7b"],
 };
 const menuStages = [
   { start: 0, recipes: [
     { name: "Le Martini", mix: ["gin", "vermouth", "olive"] },
     { name: "Negroni", mix: ["gin", "vermouth", "campari"] },
-    { name: "Espresso Martini", mix: ["vodka", "coffee"] },
-    { name: "Gin Rickey", mix: ["gin", "lime", "soda"] },
+    { name: "Milano–Torino", mix: ["vermouth", "campari"] },
   ] },
   { start: 20_000, recipes: [
     { name: "Bloody Boyarsky", mix: ["vodka", "grenadine", "tabasco"] },
-    { name: "Tequila Sunrise", mix: ["tequila", "orange", "grenadine"] },
-    { name: "Cuba Libre", mix: ["rum", "cola", "lime"] },
-    { name: "Margarita", mix: ["tequila", "tripleSec", "lime"] },
-    { name: "Dirty Spreadsheet", mix: ["vodka", "coffee", "cola"] },
-    { name: "A Shot in the Dark", mix: ["rum", "coffee", "grenadine"] },
+    { name: "Vodka Martini", mix: ["vodka", "vermouth", "olive"] },
   ] },
   { start: 42_000, recipes: [
     { name: "Fall of Christianity", mix: ["vodka", "whiskey", "tequila", "rum"] },
-    { name: "Moscow Mule", mix: ["vodka", "lime", "gingerBeer"] },
-    { name: "Whiskey Sour", mix: ["whiskey", "lemon", "syrup"] },
-    { name: "Gin & Tonic", mix: ["gin", "tonic", "lime"] },
-    { name: "Error 404", mix: ["rum", "cola", "coffee"] },
-    { name: "Afterparty", mix: ["vodka", "energy", "lime"] },
+    { name: "Boulevardier", mix: ["whiskey", "vermouth", "campari"] },
+    { name: "Rosita", mix: ["tequila", "vermouth", "campari"] },
   ] },
 ];
 const regulars = Object.keys(barAssets.guests);
@@ -52,7 +38,21 @@ let shiftStart = 0, nextGuest = 0, frame = 0;
 let lastClock = -1;
 let menuStage = 0;
 let availableRecipes = [];
-let soundOn = false, audio, beatTimer, beat = 0, nextBeat = 0;
+let pausedAt = null;
+let pausedDuration = 0;
+const gameTime = () => (pausedAt ?? performance.now()) - pausedDuration;
+const tracks = [
+  ["Le Martini", "rozzo – le martini [See the Sea Records].mp3"],
+  ["No But No", "rozzo – no but no [See the Sea Records].mp3"],
+];
+const music = get("music");
+const nowPlaying = get("now-playing");
+const soundButton = get("sound");
+let soundOn = true;
+let audio;
+let trackIndex = 0;
+let shiftCount = 0;
+music.volume = .48;
 try { best = Number(localStorage.getItem(bestKey)) || 0; } catch {}
 if (best) {
   get("intro-best").textContent = "House record $" + best;
@@ -76,7 +76,7 @@ menuStages.flatMap((stage) => stage.recipes).forEach((recipe) => {
   description.textContent = recipe.mix.map((key) => ingredients[key][0]).join(" · ");
   const copy = document.createElement("span");
   copy.append(title, document.createElement("br"), description);
-  row.append(sprite(barAssets.cocktails[recipe.name].image, "recipe-image"), copy);
+  row.append(sprite(barAssets.cocktails[recipe.name], "recipe-image"), copy);
   get("recipes").append(row);
 });
 for (const [key, [name, color]] of Object.entries(ingredients)) {
@@ -138,7 +138,7 @@ function renderSlot(index) {
   button.innerHTML = '<span class="guest-art"></span><span class="guest-name"></span><strong></strong><small></small><span class="patience" aria-hidden="true"><span></span></span>';
   button.querySelector(".guest-art").append(
     sprite(barAssets.guests[guest.person], "guest-portrait"),
-    sprite(barAssets.cocktails[guest.recipe.name].image, "order-image"),
+    sprite(barAssets.cocktails[guest.recipe.name], "order-image"),
   );
   button.querySelector(".guest-name").textContent = guest.person;
   button.querySelector("strong").textContent = guest.recipe.name;
@@ -196,7 +196,7 @@ function loseGuest(index) {
 
 function serve(index) {
   const guest = slots[index];
-  const now = performance.now();
+  const now = gameTime();
   if (!shiftOpen(now) || !guest) return;
   if (guest.expires <= now) {
     loseGuest(index);
@@ -227,7 +227,8 @@ function serve(index) {
   updateStats();
 }
 
-function tick(now) {
+function tick() {
+  const now = gameTime();
   if (!shiftOpen(now)) return;
   const elapsed = now - shiftStart;
   const nextStage = menuStages[menuStage + 1];
@@ -254,8 +255,8 @@ function tick(now) {
   frame = requestAnimationFrame(tick);
 }
 
-function shiftOpen(now = performance.now()) {
-  if (phase !== "game") return false;
+function shiftOpen(now = gameTime()) {
+  if (phase !== "game" || pausedAt !== null) return false;
   if (now >= shiftStart + shiftLength) {
     finish();
     return false;
@@ -278,18 +279,24 @@ function begin() {
   get("results").hidden = true;
   get("game").hidden = false;
   phase = "game";
-  shiftStart = performance.now();
+  pausedAt = null;
+  pausedDuration = 0;
+  shiftStart = gameTime();
   nextGuest = shiftStart + 6500;
   seatGuest(shiftStart);
-  if (soundOn) startBeat();
-  tick(shiftStart);
+  pickTrack(shiftCount % tracks.length);
+  shiftCount++;
+  playSound();
+  leaderboard.begin();
+  tick();
   ingredientButtons.get("gin").focus({ preventScroll: true });
 }
 
 function finish() {
   phase = "results";
   cancelAnimationFrame(frame);
-  stopBeat();
+  music.pause();
+  leaderboard.finish(tips);
   const newBest = tips > best;
   best = Math.max(best, tips);
   try { localStorage.setItem(bestKey, String(best)); } catch {}
@@ -316,58 +323,75 @@ function tone(from, duration, volume, type, to, at = audio?.currentTime) {
   oscillator.stop(at + duration);
 }
 
-function startBeat() {
-  if (!audio || beatTimer) return;
-  const stepSeconds = 60 / 124 / 2;
-  beat = 0;
-  nextBeat = audio.currentTime + .035;
-  const schedule = () => {
-    if (audio.state !== "running") return;
-    if (nextBeat < audio.currentTime) nextBeat = audio.currentTime + .035;
-    while (nextBeat < audio.currentTime + .08) {
-      if (beat % 2 === 0) tone(108,.15,.085,"sine",43,nextBeat);
-      else {
-        tone(1700,.039,.013,"triangle",1270,nextBeat);
-        const root = [55,55,65.41,49][Math.floor(beat / 8) % 4];
-        tone(root,.19,.043,"triangle",root,nextBeat);
-      }
-      beat++;
-      nextBeat += stepSeconds;
-    }
-  };
-  schedule();
-  beatTimer = setInterval(schedule,25);
+function pickTrack(index) {
+  trackIndex = index;
+  const [title, file] = tracks[index];
+  const source = "audio/" + encodeURIComponent(file);
+  if (music.getAttribute("src") !== source) music.src = source;
+  else music.currentTime = 0;
+  nowPlaying.textContent = "Rozzo · " + title;
 }
 
-function stopBeat() {
-  clearInterval(beatTimer);
-  beatTimer = null;
-}
-
-get("sound").addEventListener("click", async () => {
-  if (!soundOn) {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) {
-      get("sound").textContent = "Sound unavailable";
-      return;
-    }
-    try {
-      audio ||= new AudioContext();
-      await audio.resume();
-    } catch {
-      get("sound").textContent = "Sound unavailable";
-      return;
-    }
-    soundOn = true;
-    if (phase === "game") startBeat();
-    else tone(510,.075,.025,"sine",680);
-  } else {
-    soundOn = false;
-    stopBeat();
-    audio.suspend().catch(() => {});
+function playSound() {
+  if (!soundOn || phase !== "game" || pausedAt !== null) return;
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (AudioContext) {
+    audio ||= new AudioContext();
+    audio.resume().catch(() => {});
   }
-  get("sound").textContent = soundOn ? "Sound on" : "Sound off";
-  get("sound").setAttribute("aria-pressed", soundOn);
+  music.play().catch((error) => {
+    if (error.name !== "AbortError" && soundOn && phase === "game" && pausedAt === null && music.paused) {
+      nowPlaying.textContent = "Tap Sound to start music";
+      soundOn = false;
+      updateSoundButton();
+    }
+  });
+}
+
+function updateSoundButton() {
+  soundButton.textContent = soundOn ? "Sound on" : "Sound off";
+  soundButton.setAttribute("aria-pressed", soundOn);
+}
+
+music.addEventListener("playing", () => {
+  nowPlaying.textContent = "Rozzo · " + tracks[trackIndex][0];
+});
+music.addEventListener("ended", () => {
+  pickTrack((trackIndex + 1) % tracks.length);
+  playSound();
+});
+soundButton.addEventListener("click", () => {
+  soundOn = !soundOn;
+  if (soundOn) playSound();
+  else music.pause();
+  updateSoundButton();
+});
+
+const pauseDialog = get("pause-dialog");
+function pauseShift() {
+  if (!shiftOpen()) return;
+  pausedAt = performance.now();
+  cancelAnimationFrame(frame);
+  music.pause();
+  if (audio?.state === "running") audio.suspend().catch(() => {});
+  get("menu").open = false;
+  pauseDialog.showModal();
+}
+
+function resumeShift() {
+  if (pausedAt === null) return;
+  pausedDuration += performance.now() - pausedAt;
+  pausedAt = null;
+  pauseDialog.close();
+  playSound();
+  tick();
+}
+
+get("pause").addEventListener("click", pauseShift);
+get("resume").addEventListener("click", resumeShift);
+pauseDialog.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  resumeShift();
 });
 get("clear").addEventListener("click", () => {
   if (!shiftOpen()) return;
