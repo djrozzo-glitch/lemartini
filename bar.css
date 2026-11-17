@@ -1,0 +1,79 @@
+:root{color-scheme:dark;--bg:#11151b;--panel:#131820;--line:#5b4b3b;--cream:#fff1d9;--muted:#d9c5aa;--gold:#e8bf83;--success:#dce3a1;--warning:#ffada6;--serif:"Instrument Serif",Georgia,serif;--mono:"IBM Plex Mono",monospace}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;min-height:100vh;background:linear-gradient(90deg,#0b0e14e8,#0b0e14aa 60%,#0b0e148f),url("assets/backgrounds/night-bar.webp") center / cover fixed no-repeat,var(--bg);color:var(--cream);font:15px "DM Sans",system-ui,sans-serif}
+main{width:min(100% - 48px,1120px);margin:auto}
+button,summary{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+button:disabled{cursor:default;opacity:.48}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--success);outline-offset:4px}
+.masthead,footer{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:15px}
+.masthead{height:75px}
+.wordmark{font:italic 40px/1 var(--serif);letter-spacing:-3px}
+.wordmark span{color:var(--gold)}
+.mast-label,footer,.eyebrow{font:500 11px/1.4 var(--mono);letter-spacing:.15em}
+.mast-label,.eyebrow,footer{color:var(--muted)}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);margin:0 10px 2px}
+.eyebrow .dot{margin-left:0}
+.quiet{border:1px solid var(--line);background:var(--panel);padding:8px 13px;min-height:38px;font-size:13px}
+.quiet:hover{background:#222834}
+.intro{display:grid;grid-template-columns:1.02fr 1fr;align-items:center;padding:42px 0;gap:42px}
+.intro-copy{padding:0 0 0 clamp(0px,3vw,38px)}
+h1,.results h2{font:400 clamp(86px,11vw,164px)/.82 var(--serif);letter-spacing:-.065em;margin:24px 0 28px}
+h1 em{color:var(--gold);font-weight:400}
+.pitch{max-width:320px;margin:0 0 27px;color:var(--cream);font-size:17px;line-height:1.55}
+.primary{display:inline-flex;justify-content:space-between;gap:30px;align-items:center;border:0;background:var(--gold);color:#21170e;padding:14px 17px;min-width:186px;font-weight:700}
+.primary span{font-size:18px}
+.primary:hover{background:#ffdfae}
+.best{font:500 12px var(--mono);color:var(--muted)}
+.poster{width:min(100%,447px);margin:0 auto;border:1px solid #78624c;box-shadow:0 20px 65px #0009}
+.poster img{display:block;width:100%;height:auto}
+footer{border-bottom:0;border-top:1px solid var(--line);min-height:59px}
+footer .dot{margin:0 5px 2px}
+#game{max-width:920px;margin:20px auto 24px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr) auto;gap:10px;align-items:center;padding:0 2px 12px}
+.stats div>span{display:block}
+.stats strong{font:36px/1 var(--serif);font-variant-numeric:tabular-nums}
+#clock.urgent{color:var(--warning)}
+#menu{position:relative;z-index:2}
+#menu summary{list-style:none;display:flex;align-items:center}
+#menu summary::-webkit-details-marker{display:none}
+#recipes{position:absolute;right:0;top:calc(100% + 6px);width:min(270px,85vw);max-height:56vh;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--line);background:var(--panel);padding:4px 14px;box-shadow:0 12px 30px #140c0d}
+#recipes p{display:flex;align-items:center;gap:8px;margin:8px 0;padding-bottom:7px;border-bottom:1px solid #53433280}
+.recipe-image{flex:0 0 36px;width:36px;height:36px;object-fit:contain}
+#recipes span{font-size:12px;color:var(--muted)}
+.counter,.station{border:1px solid var(--line);background:#11151be8;padding:12px}
+.counter{margin-bottom:10px}
+.section-label{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:28px;margin-bottom:7px}
+.section-label h2{margin:0}.section-label>span,.text-button{font-size:12px;color:var(--muted)}
+.guests{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.guest{position:relative;display:flex;flex-direction:column;align-items:start;text-align:left;gap:2px;min-width:0;min-height:129px;overflow:hidden;background:radial-gradient(ellipse at 38% 15%,#514038,#20252e 60%,#151a22);border:1px solid var(--line);padding:10px 10px 15px}
+.guest:not(:disabled):hover{border-color:var(--gold);background:radial-gradient(ellipse at 38% 15%,#685142,#2a303a 65%,#202630)}
+.guest-art{position:relative;width:100%;height:96px;display:flex;align-items:end;justify-content:center;gap:4px;border-bottom:1px solid #9a785963;margin-bottom:5px}
+.guest-portrait{height:100%;width:67%;object-fit:contain;object-position:center bottom}
+.order-image{width:30%;height:74%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 3px 5px #0009)}
+.guest .guest-name{color:var(--muted);font:500 10px var(--mono);text-transform:uppercase;letter-spacing:.08em}
+.guest strong{font:25px/.98 var(--serif)}
+.guest small{font-size:11px;color:var(--muted);line-height:1.25}
+.guest.empty{justify-content:center;align-items:center;font-size:12px;background:transparent}
+.patience{position:absolute;height:4px;inset:auto 0 0;background:#42362e}
+.patience span{display:block;background:var(--success);height:100%;transform-origin:left}
+.patience span.low{background:var(--warning)}
+.station .section-label{margin-bottom:3px}
+.text-button{border:0;background:none;text-decoration:underline;min-height:32px;padding:0 2px}
+.mix{display:flex;align-items:center;min-height:40px;gap:8px;background:#0f141a;padding:4px 8px;margin-bottom:8px;color:var(--cream);font-size:13px}
+.glass{flex:0 0 32px;width:32px;height:32px;object-fit:contain}
+.shaker{width:22px;height:22px;object-fit:contain;margin-right:5px;vertical-align:middle}
+.ingredients{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.ingredient{border:1px solid var(--line);background:#1b222c;min-width:0;min-height:48px;line-height:1.12;padding:4px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:13px}
+.ingredient-image{width:36px;height:36px;object-fit:contain;flex:none}
+.ingredient:hover,.ingredient[aria-pressed="true"]{background:#343036;border-color:var(--gold)}
+.ingredient[aria-pressed="true"]{box-shadow:inset 0 -2px var(--liquid)}
+.feedback{min-height:18px;margin:8px 0 0;color:var(--muted);font-size:13px}
+.feedback.good{color:var(--success)}
+.feedback.bad{color:var(--warning)}
+.results{text-align:center;padding:75px 12px 85px}
+.results h2{color:var(--gold);margin:18px 0 26px}
+.results p:not(.eyebrow){font-size:17px;margin-bottom:25px}
+@media(max-width:720px){main{width:calc(100% - 28px)}.intro{grid-template-columns:1fr;gap:25px;padding:26px 0}.intro-copy{padding:0 0 0 3px}h1{font-size:clamp(70px,15vw,110px);margin:17px 0 14px}.pitch{font-size:15px;margin-bottom:18px}body{background-image:linear-gradient(#0b0e14bd,#0b0e14df),url("assets/backgrounds/night-bar-mobile.webp");background-attachment:scroll}.poster{width:min(100%,52vh,370px)}.masthead{height:54px}.mast-label{font-size:9px;letter-spacing:.09em}.wordmark{font-size:31px}footer{min-height:43px}.guest strong{font-size:21px}.guest{padding:7px 5px 12px;min-height:138px}.guest-art{height:62px}.ingredient{flex-direction:column;gap:0;font-size:11px;min-height:51px}.ingredient-image{width:31px;height:31px}.stats strong{font-size:30px}}
+@media(max-width:365px){.mast-label .dot{margin:0 4px 1px}.ingredient{font-size:11px}.guest small{font-size:10px}.guest strong{font-size:19px}}
+@media(min-width:721px){.ingredients{grid-template-columns:repeat(5,minmax(0,1fr))}}
