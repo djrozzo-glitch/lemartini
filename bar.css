@@ -42,7 +42,6 @@ footer .dot{margin:0 5px 2px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr) auto;gap:10px;align-items:center;padding:0 2px 12px}
 .stats div>span{display:block}
 .stats strong{font:36px/1 var(--serif);font-variant-numeric:tabular-nums}
-#clock.urgent{color:var(--warning)}
 #menu{position:relative;z-index:2}
 #menu summary{list-style:none;display:flex;align-items:center}
 #menu summary::-webkit-details-marker{display:none}

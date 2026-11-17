@@ -25,16 +25,15 @@ const menuStages = [
 ];
 const regulars = Object.keys(barAssets.guests);
 const get = (id) => document.getElementById(id);
-const rankedShiftLength = 90_000;
-const recordKeys = { ranked: "le-martini-best", endless: "le-martini-endless-best" };
+const walkoutLimit = 5;
+const bestTimeKey = "le-martini-longest-shift";
 const slots = Array(3).fill(null);
 const guestButtons = [];
 const ingredientButtons = new Map();
 const glass = new Set();
 const orderedRecipes = new Set();
 let phase = "intro";
-let ranked = false;
-let tips = 0, streak = 0, served = 0, walked = 0;
+let tips = 0, streak = 0, served = 0, walked = 0, walkoutStreak = 0;
 let shiftStart = 0, nextGuest = 0, frame = 0;
 let lastClock = -1;
 let menuStage = 0;
@@ -56,13 +55,20 @@ let audio;
 let trackIndex = 0;
 let shiftCount = 0;
 music.volume = .48;
-function bestFor(key) {
-  try { return Number(localStorage.getItem(key)) || 0; } catch { return 0; }
+function formatShiftTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const tail = String(seconds % 60).padStart(2, "0");
+  if (minutes < 60) return minutes + ":" + tail;
+  return Math.floor(minutes / 60) + ":" + String(minutes % 60).padStart(2, "0") + ":" + tail;
+}
+
+function readBestTime() {
+  try { return Number(localStorage.getItem(bestTimeKey)) || 0; } catch { return 0; }
 }
 
 function showEndlessBest() {
-  const best = bestFor(recordKeys.endless);
-  get("intro-best").textContent = "Endless record $" + best;
+  const best = readBestTime();
+  get("intro-best").textContent = "Longest shift · " + formatShiftTime(best);
   get("intro-best").hidden = !best;
 }
 
@@ -196,17 +202,19 @@ function updateStats() {
 
 function loseGuest(index) {
   walked++;
-  feedback(slots[index].person + " got tired of waiting.", "bad");
+  walkoutStreak++;
+  feedback(slots[index].person + " walked out (" + walkoutStreak + "/" + walkoutLimit + ").", "bad");
   slots[index] = null;
   streak = 0;
   renderSlot(index);
   updateStats();
+  if (walkoutStreak >= walkoutLimit) finish(true);
 }
 
 function serve(index) {
   const guest = slots[index];
   const now = gameTime();
-  if (!shiftOpen(now) || !guest) return;
+  if (!shiftOpen() || !guest) return;
   if (guest.expires <= now) {
     loseGuest(index);
     return;
@@ -219,6 +227,7 @@ function serve(index) {
   if (matchesOrder) {
     emptyGlass();
     served++;
+    walkoutStreak = 0;
     streak++;
     const speedBonus = Math.floor(guest.expires - now < 0 ? 0 : 4 * (guest.expires - now) / guest.patience);
     const earned = 8 + speedBonus + Math.min(5, streak - 1);
@@ -238,25 +247,28 @@ function serve(index) {
 
 function tick() {
   const now = gameTime();
-  if (!shiftOpen(now)) return;
+  if (!shiftOpen()) return;
   const elapsed = now - shiftStart;
   const nextStage = menuStages[menuStage + 1];
   if (nextStage && elapsed >= nextStage.start) {
     setMenuStage(menuStages.findLastIndex((stage) => elapsed >= stage.start));
   }
-  const seconds = ranked ? Math.ceil((rankedShiftLength - elapsed) / 1000) : Math.floor(elapsed / 1000);
+  const seconds = Math.floor(elapsed / 1000);
   if (seconds !== lastClock) {
-    get("clock").textContent = Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2,"0");
-    get("clock").classList.toggle("urgent", ranked && seconds <= 10);
+    get("clock").textContent = formatShiftTime(seconds);
     lastClock = seconds;
   }
-  slots.forEach((guest, index) => {
-    if (!guest) return;
-    if (guest.expires <= now) { loseGuest(index); return; }
+  for (const [index, guest] of slots.entries()) {
+    if (!guest) continue;
+    if (guest.expires <= now) {
+      loseGuest(index);
+      if (phase !== "game") return;
+      continue;
+    }
     const remaining = (guest.expires - now) / guest.patience;
     guest.bar.style.transform = "scaleX(" + remaining + ")";
     guest.bar.classList.toggle("low", remaining < .28);
-  });
+  }
   if (now >= nextGuest) {
     seatGuest(now);
     nextGuest = now + Math.max(4500, 7000 - elapsed * .03);
@@ -264,18 +276,12 @@ function tick() {
   frame = requestAnimationFrame(tick);
 }
 
-function shiftOpen(now = gameTime()) {
-  if (phase !== "game" || pausedAt !== null) return false;
-  if (ranked && now >= shiftStart + rankedShiftLength) {
-    finish();
-    return false;
-  }
-  return true;
+function shiftOpen() {
+  return phase === "game" && pausedAt === null;
 }
 
-function begin(rankedShift) {
-  ranked = rankedShift;
-  tips = streak = served = walked = 0;
+function begin() {
+  tips = streak = served = walked = walkoutStreak = 0;
   lastClock = -1;
   orderedRecipes.clear();
   setMenuStage(0);
@@ -288,8 +294,6 @@ function begin(rankedShift) {
   get("intro").hidden = true;
   get("results").hidden = true;
   get("game").hidden = false;
-  get("clock-label").textContent = ranked ? "TIME LEFT" : "TIME OPEN";
-  get("close-bar").hidden = ranked;
   phase = "game";
   pausedAt = null;
   pausedDuration = 0;
@@ -299,25 +303,28 @@ function begin(rankedShift) {
   pickTrack(shiftCount % tracks.length);
   shiftCount++;
   playSound();
-  leaderboard.begin(ranked);
+  leaderboard.begin();
   tick();
   ingredientButtons.get("gin").focus({ preventScroll: true });
 }
 
-function finish() {
+function finish(closedByWalkouts = false) {
+  if (phase !== "game") return;
+  const seconds = Math.floor((gameTime() - shiftStart) / 1000);
+  pausedAt = null;
   phase = "results";
   cancelAnimationFrame(frame);
   music.pause();
-  if (ranked) leaderboard.finish(tips);
-  const key = ranked ? recordKeys.ranked : recordKeys.endless;
-  const priorBest = bestFor(key);
-  const newBest = tips > priorBest;
+  leaderboard.finish(served > 0 ? seconds : 0);
+  const priorBest = readBestTime();
+  const newBest = served > 0 && seconds > priorBest;
   if (newBest) {
-    try { localStorage.setItem(key, String(tips)); } catch {}
+    try { localStorage.setItem(bestTimeKey, String(seconds)); } catch {}
   }
-  const recordLabel = ranked ? "CHALLENGE RECORD" : "ENDLESS RECORD";
-  get("record").textContent = (newBest ? "NEW " : "") + recordLabel + " · $" + Math.max(priorBest, tips);
-  get("summary").textContent = "$" + tips + " in tips · " + served + " served · " + walked + " walked out";
+  get("record").textContent = (newBest ? "NEW " : "") + "LONGEST SHIFT · " + formatShiftTime(newBest ? seconds : priorBest);
+  get("summary").textContent = formatShiftTime(seconds) + " open · $" + tips + " in tips · " + served + " served · " + walked + " walked out";
+  const reason = get("close-reason");
+  reason.hidden = !closedByWalkouts;
   get("game").hidden = true;
   get("results").hidden = false;
   get("retry").focus({ preventScroll: true });
@@ -394,7 +401,6 @@ function pauseShift() {
   if (audio?.state === "running") audio.suspend().catch(() => {});
   get("menu").open = false;
   get("pause-clock").textContent = get("clock").textContent;
-  get("pause-clock-label").textContent = ranked ? "remaining" : "open";
   pauseDialog.showModal();
 }
 
@@ -409,9 +415,11 @@ function resumeShift() {
 
 get("pause").addEventListener("click", pauseShift);
 get("resume").addEventListener("click", resumeShift);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) pauseShift();
+});
 get("close-bar").addEventListener("click", () => {
-  if (ranked || pausedAt === null) return;
-  pausedAt = null;
+  if (pausedAt === null) return;
   pauseDialog.close();
   finish();
 });
@@ -424,9 +432,8 @@ get("clear").addEventListener("click", () => {
   emptyGlass();
   ingredientButtons.get("gin").focus({ preventScroll: true });
 });
-get("start").addEventListener("click", () => begin(false));
-get("challenge").addEventListener("click", () => begin(true));
-get("retry").addEventListener("click", () => begin(ranked));
+get("start").addEventListener("click", begin);
+get("retry").addEventListener("click", begin);
 get("main-menu").addEventListener("click", () => {
   phase = "intro";
   get("results").hidden = true;

@@ -1,7 +1,7 @@
 "use strict";
 
 const leaderboard = (() => {
-  const api = "https://kombucha-leaderboard.djrozzo.workers.dev/api/le-martini";
+  const api = "https://kombucha-leaderboard.djrozzo.workers.dev/api/le-martini-endless";
   const element = (id) => document.getElementById(id);
   const dialog = element("leaderboard-dialog");
   const boardStatus = element("leaderboard-status");
@@ -28,31 +28,36 @@ const leaderboard = (() => {
   }
 
   async function refresh() {
-    boardStatus.textContent = "Loading scores…";
+    boardStatus.textContent = "Loading times…";
     try {
       const data = await request("/scores");
       const rows = data.entries.map(({ name, score }) => {
         const row = document.createElement("li");
         const player = document.createElement("span");
-        const tips = document.createElement("strong");
+        const time = document.createElement("strong");
         player.textContent = name;
-        tips.textContent = "$" + score;
-        row.append(player, tips);
+        time.textContent = formatShiftTime(score);
+        row.append(player, time);
         return row;
       });
       entries.replaceChildren(...rows);
-      boardStatus.textContent = rows.length ? "Top 10 by tips" : "No scores yet.";
+      boardStatus.textContent = rows.length ? "Top 10 longest shifts" : "No times yet.";
     } catch {
       entries.replaceChildren();
       boardStatus.textContent = "Leaderboard is unavailable right now.";
     }
   }
 
-  function open() {
+  function updateForm() {
     form.hidden = !current?.score;
     submit.disabled = !current?.token || current.posted || current.pending;
-    status.textContent = !current?.score ? "" : current.posted ? "Score posted."
-      : current.pending ? "Posting score…" : current.token ? "" : "Ranking was unavailable at the start of this shift.";
+    status.textContent = !current?.score ? "" : current.posted ? "Time posted."
+      : current.pending ? "Posting time…" : current.token ? ""
+        : current.loading ? "Connecting to the leaderboard…" : "Ranking was unavailable at the start of this shift.";
+  }
+
+  function open() {
+    updateForm();
     dialog.showModal();
     refresh();
   }
@@ -69,15 +74,15 @@ const leaderboard = (() => {
     }
     run.pending = true;
     submit.disabled = true;
-    status.textContent = "Posting score…";
+    status.textContent = "Posting time…";
     try {
       await request("/scores", { name, score: run.score, token: run.token });
       run.posted = true;
       try { localStorage.setItem(nicknameKey, name); } catch {}
-      if (current === run) status.textContent = "Score posted.";
+      if (current === run) status.textContent = "Time posted.";
       if (dialog.open) refresh();
     } catch {
-      if (current === run) status.textContent = "Could not post this score. Try again.";
+      if (current === run) status.textContent = "Could not post this time. Try again.";
     } finally {
       run.pending = false;
       if (current === run) submit.disabled = run.posted;
@@ -85,14 +90,13 @@ const leaderboard = (() => {
   });
 
   return {
-    begin(ranked = true) {
-      if (!ranked) {
-        current = null;
-        return;
-      }
-      const run = { token: null, score: 0, posted: false, pending: false };
+    begin() {
+      const run = { token: null, score: 0, posted: false, pending: false, loading: true };
       current = run;
-      request("/run", {}).then(({ token }) => { run.token = token; }).catch(() => {});
+      request("/run", {}).then(({ token }) => { run.token = token; }).catch(() => {}).finally(() => {
+        run.loading = false;
+        if (current === run && dialog.open) updateForm();
+      });
     },
     finish(score) {
       if (current) current.score = score;
