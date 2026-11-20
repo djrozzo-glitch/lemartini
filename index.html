@@ -9,97 +9,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="bar.css?v=6">
-<script defer src="bar-assets.js?v=2"></script>
-<script defer src="leaderboard.js?v=4"></script>
-<script defer src="bar.js?v=6"></script>
+<link rel="stylesheet" href="bar.css?v=7">
+<script defer src="game.bundle.js?v=1"></script>
 </head>
 <body>
-<main>
-  <header class="masthead">
-    <span class="wordmark">LM<span>.</span></span>
-    <div class="mast-track" aria-live="polite">
-      <strong id="now-playing">Le Martini</strong>
-      <span class="track-label" id="track-label">Rozzo · See the Sea Records</span>
-      <span class="track-label" id="music-status" hidden>Tap Sound to start music</span>
-    </div>
-    <div class="mast-actions">
-      <a class="stream-link" href="https://album.link/lemartini" target="_blank" rel="noopener" aria-label="Listen on streaming">Listen<span class="stream-detail"> on streaming</span> <span aria-hidden="true">↗</span></a>
-      <button id="sound" class="quiet" aria-pressed="true">Sound on</button>
-    </div>
-  </header>
-  <section id="intro" class="intro">
-    <div class="intro-copy">
-      <p class="eyebrow"><span class="dot"></span> THE 124 BPM BARTENDING GAME</p>
-      <h1>Le <em>Martini</em></h1>
-      <p class="pitch">Keep the bar open as long as you can. Five guests walking out in a row will end your shift.</p>
-      <div class="mode-actions">
-        <button class="primary" id="start">Open the bar <span aria-hidden="true">↗</span></button>
-        <button class="quiet" data-leaderboard>Leaderboard</button>
-      </div>
-      <p class="best" id="intro-best" hidden></p>
-    </div>
-    <figure class="poster">
-      <img src="assets/branding/le-martini-cover.png" alt="Rozzo · Le Martini single cover" width="447" height="447" fetchpriority="high">
-    </figure>
-  </section>
-  <section id="game" hidden aria-label="Bartending game">
-    <div class="stats">
-      <div><span class="eyebrow">TIME OPEN</span><strong id="clock">0:00</strong></div>
-      <div><span class="eyebrow">TIPS</span><strong id="score">$0</strong></div>
-      <div><span class="eyebrow">STREAK</span><strong id="streak">0</strong></div>
-      <button class="quiet" id="pause">Pause</button>
-      <details id="menu"><summary class="quiet">Recipe card</summary><div id="recipes"></div></details>
-    </div>
-    <section class="counter" aria-labelledby="guests-label">
-      <div class="section-label"><h2 class="eyebrow" id="guests-label">AT THE BAR</h2><span>Tap a guest to serve</span></div>
-      <div id="guests" class="guests"></div>
-    </section>
-    <section class="station" aria-labelledby="station-label">
-      <div class="section-label"><h2 class="eyebrow" id="station-label"><img class="shaker" src="assets/glassware/shaker.png" alt="">MIXING STATION</h2><button class="text-button" id="clear" disabled>Empty glass</button></div>
-      <div class="mix"><img id="glass" class="glass" src="assets/glassware/empty-glass.png" alt=""><span id="mix">Glass is empty</span></div>
-      <div class="ingredients" id="ingredients"></div>
-      <p class="feedback" id="feedback" role="status">Add ingredients, then tap the guest.</p>
-    </section>
-  </section>
-  <section id="results" class="results" hidden>
-    <p class="eyebrow" id="record"></p>
-    <h2>Last call.</h2>
-    <p id="summary"></p>
-    <p id="close-reason" hidden>Five guests walked out in a row.</p>
-    <button class="primary" id="retry">Play again <span aria-hidden="true">↗</span></button>
-    <button class="quiet" id="main-menu">Main menu</button>
-    <button class="quiet" data-leaderboard>Leaderboard</button>
-  </section>
-  <footer><span>LE MARTINI</span><span>DEEP HOUSE <span class="dot"></span> 124 BPM</span></footer>
-  <dialog id="pause-dialog" aria-labelledby="pause-title">
-    <div class="pause-content">
-      <div>
-        <h2 id="pause-title" tabindex="-1" autofocus>Shift paused</h2>
-        <p class="pause-time"><strong id="pause-clock"></strong> open</p>
-      </div>
-      <img class="pause-drink" src="assets/cocktails/le-martini.png" alt="" width="256" height="256">
-    </div>
-    <button class="primary" id="resume"><span class="play-mark" aria-hidden="true"></span>Resume shift</button>
-    <button class="quiet" id="close-bar">Close the bar</button>
-  </dialog>
-  <dialog id="leaderboard-dialog" aria-labelledby="leaderboard-title">
-    <div class="dialog-heading">
-      <h2 id="leaderboard-title">Leaderboard</h2>
-      <form method="dialog"><button class="quiet" autofocus>Close</button></form>
-    </div>
-    <p id="leaderboard-status" role="status"></p>
-    <ol id="leaderboard-entries"></ol>
-    <form id="score-form" hidden>
-      <label for="nickname">Nickname</label>
-      <div class="score-controls">
-        <input id="nickname" name="nickname" maxlength="24" autocomplete="nickname" required>
-        <button class="primary" id="submit-score">Post time</button>
-      </div>
-      <p id="score-status" role="status"></p>
-    </form>
-  </dialog>
-  <audio id="music" preload="none"></audio>
-</main>
+<div id="root"></div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-const barAssets = {
+export const barAssets = {
   "version": 1,
   "backgrounds": {
     "desktop": "assets/backgrounds/night-bar.webp",
