@@ -5,12 +5,26 @@ export const barAssets = {
     "mobile": "assets/backgrounds/night-bar-mobile.webp"
   },
   "guests": {
-    "Jules": "assets/guests/jules.png",
-    "Nina": "assets/guests/nina.png",
-    "Vince": "assets/guests/vince.png",
-    "Cleo": "assets/guests/cleo.png",
-    "Remy": "assets/guests/remy.png",
-    "Sam": "assets/guests/sam.png"
+      "Peggy": "assets/guests/peggy.png",
+      "Charlotte": "assets/guests/charlotte.png",
+      "Amelie": "assets/guests/amelie.png",
+      "Honey": "assets/guests/honey.png",
+      "Carl": "assets/guests/carl.png",
+      "Coffee": "assets/guests/coffee.png",
+      "Sonny": "assets/guests/sonny.png",
+      "Simon": "assets/guests/simon.png",
+      "Louis": "assets/guests/louis.png",
+      "Solomun": "assets/guests/solomun.png",
+      "Kieran": "assets/guests/kieran.png",
+      "Jamie": "assets/guests/jamie.png",
+      "Andy": "assets/guests/andy.png",
+      "Fred": "assets/guests/fred.png",
+      "Madonna": "assets/guests/madonna.png",
+      "Anna": "assets/guests/anna.png",
+      "Nina": "assets/guests/nina.png",
+      "Adrian": "assets/guests/adrian.png",
+      "Tyrone": "assets/guests/tyrone.png",
+      "Matteo": "assets/guests/matteo.png"
   },
   "cocktails": {
     "Le Martini": "assets/cocktails/le-martini.png",

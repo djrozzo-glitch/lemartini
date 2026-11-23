@@ -10,7 +10,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="bar.css?v=7">
-<script defer src="game.bundle.js?v=1"></script>
+<script>document.addEventListener("error",function(e){const im=e.target;if(im.tagName!=="IMG"||!im.getAttribute("src")?.startsWith("assets/guests/"))return;const fallback={"peggy":"jules","charlotte":"nina","amelie":"vince","honey":"cleo","carl":"remy","coffee":"sam","sonny":"jules","simon":"nina","louis":"vince","solomun":"cleo","kieran":"remy","jamie":"sam","andy":"jules","fred":"nina","madonna":"vince","anna":"cleo","nina":"remy","adrian":"sam","tyrone":"jules","matteo":"nina"};const name=im.getAttribute("src").split("/").pop().replace(".png","");if(fallback[name])im.src="assets/guests/"+fallback[name]+".png";},true);</script>
+<script defer src="game.bundle.js?v=2"></script>
 </head>
 <body>
 <div id="root"></div>
