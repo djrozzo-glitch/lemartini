@@ -136,3 +136,10 @@ dialog h2{font:36px/1 var(--serif);margin:0}
 .stream-underline{position:absolute;left:0;right:0;bottom:-3px;height:1px;background:currentColor;transform-origin:center}
 .patience span{transition:transform .1s linear}
 @media(prefers-reduced-motion:reduce){.patience span,.stream-underline{transition:none}}
+
+/* Next Track: kept visible on mobile for screen recordings */
+#next-track{gap:6px;border-color:#806747;color:var(--gold);font-weight:600}
+#next-track:not(:disabled):hover{background:#30251c;border-color:var(--gold)}
+#next-track span{font-size:16px;line-height:1}
+@media(max-width:720px){.masthead{flex-wrap:wrap}.mast-track{flex-basis:calc(100% - 85px)}.mast-actions{width:100%;justify-content:flex-end}.mast-actions .quiet,.mast-actions .stream-link{min-height:40px}#next-track{padding-inline:8px}}
+@media(max-width:365px){.mast-track{flex-basis:100%}.mast-actions{justify-content:space-between}}

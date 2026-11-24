@@ -203,6 +203,7 @@ function App() {
       <div className="mast-actions">
         <CenterUnderline className="stream-link" href="https://album.link/lemartini" target="_blank" rel="noopener"
           aria-label="Listen on streaming">Listen<span className="stream-detail"> on streaming</span> <span aria-hidden="true">↗</span></CenterUnderline>
+        <button id="next-track" className="quiet next-track" type="button" onClick={sound.next} disabled={phase !== "game" || paused} aria-label="Play next track" title="Play next track">Next Track <span aria-hidden="true">⏭</span></button>
         <button id="sound" className="quiet" aria-pressed={sound.soundOn} onClick={sound.toggle}>Sound {sound.soundOn ? "on" : "off"}</button>
       </div>
     </header>
