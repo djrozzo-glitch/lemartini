@@ -143,3 +143,36 @@ dialog h2{font:36px/1 var(--serif);margin:0}
 #next-track span{font-size:16px;line-height:1}
 @media(max-width:720px){.masthead{flex-wrap:wrap}.mast-track{flex-basis:calc(100% - 85px)}.mast-actions{width:100%;justify-content:flex-end}.mast-actions .quiet,.mast-actions .stream-link{min-height:40px}#next-track{padding-inline:8px}}
 @media(max-width:365px){.mast-track{flex-basis:100%}.mast-actions{justify-content:space-between}}
+
+/* Compact transport — matching the bar's fine brass outlines */
+.masthead{display:flex;flex-wrap:nowrap;min-height:62px;gap:11px;position:relative;z-index:101}
+.masthead .wordmark{flex:0 0 auto;font-size:34px}
+.mast-track{flex:1 1 auto;min-width:0}
+.mast-track strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:25px}
+.mast-track .track-label{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mast-actions.compact-controls{flex:0 0 auto;width:auto;display:flex;gap:5px;align-items:center;margin-left:auto;justify-content:flex-end}
+.icon-button{display:grid;place-items:center;width:39px;height:39px;min-width:39px;min-height:39px;padding:0;background:#161b23;border:1px solid #806748;color:var(--gold);border-radius:2px}
+.icon-button:not(:disabled):hover{border-color:var(--gold);background:#34291f}
+.icon-button:disabled{opacity:.45}
+.icon-button[aria-pressed="false"]{color:var(--muted)}
+.ui-icon{display:block;width:18px;height:18px;background:currentColor;mask-position:center;mask-repeat:no-repeat;mask-size:contain;-webkit-mask-position:center;-webkit-mask-repeat:no-repeat;-webkit-mask-size:contain}
+.icon-play{mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M7 4.5 20 12 7 19.5Z'/%3E%3C/svg%3E");-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M7 4.5 20 12 7 19.5Z'/%3E%3C/svg%3E")}
+.icon-pause{mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M6 4h4v16H6zm8 0h4v16h-4z'/%3E%3C/svg%3E");-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M6 4h4v16H6zm8 0h4v16h-4z'/%3E%3C/svg%3E")}
+.icon-next{mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M3 4.5 12.5 12 3 19.5ZM12 4.5 21.5 12 12 19.5ZM21 4h2v16h-2z'/%3E%3C/svg%3E");-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M3 4.5 12.5 12 3 19.5ZM12 4.5 21.5 12 12 19.5ZM21 4h2v16h-2z'/%3E%3C/svg%3E")}
+.icon-volume{mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M11 5 6 9H3v6h3l5 4V5Zm4 4a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12'/%3E%3C/svg%3E");-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M11 5 6 9H3v6h3l5 4V5Zm4 4a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12'/%3E%3C/svg%3E")}
+.icon-muted{mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M11 5 6 9H3v6h3l5 4V5Zm5 4 6 6m0-6-6 6'/%3E%3C/svg%3E");-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M11 5 6 9H3v6h3l5 4V5Zm5 4 6 6m0-6-6 6'/%3E%3C/svg%3E")}
+.intro-listen{display:inline-block;margin-top:15px;font-size:14px;font-weight:600;color:var(--gold);text-decoration:none;padding:4px 0}
+.intro-listen:focus-visible{outline:2px solid var(--gold)}
+/* Non-modal pause keeps the transport button clickable to resume. */
+body:has(#pause-dialog[open])::before{content:"";position:fixed;inset:0;z-index:80;background:#060910b5;pointer-events:none}
+#pause-dialog[open]{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;z-index:100;box-shadow:0 25px 85px #000c}
+@media(max-width:720px){
+  .masthead{display:flex;flex-wrap:nowrap;gap:8px;min-height:61px}
+  .masthead .wordmark{display:block;font-size:30px;letter-spacing:-2px}
+  .mast-track{flex:1 1 auto;min-width:0}
+  .mast-track strong{font-size:21px}
+  .mast-track .track-label{font-size:9px}
+  .mast-actions.compact-controls{width:auto;gap:4px}
+  .icon-button{width:36px;height:36px;min-width:36px;min-height:36px}
+}
+@media(max-width:365px){.masthead .wordmark{display:none}.mast-track strong{font-size:20px}}

@@ -42,7 +42,6 @@ function Bar({ data, recipeCard, onPause, onAdd, onClear, onServe }) {
       <div><span className="eyebrow">TIME OPEN</span><strong id="clock">{formatShiftTime(Math.floor(data.elapsed / 1000))}</strong></div>
       <div><span className="eyebrow">TIPS</span><NumberTicker value={data.tips} /></div>
       <div><span className="eyebrow">STREAK</span><strong id="streak">{data.streak}</strong></div>
-      <button className="quiet" id="pause" onClick={onPause}>Pause</button>
       <details id="menu" ref={recipeCard}><summary className="quiet">Recipe card</summary>
         <div id="recipes">{allRecipes.map(recipe => <p key={recipe.name}>
           <Artwork className="recipe-image" src={barAssets.cocktails[recipe.name]} />
@@ -83,7 +82,7 @@ function PauseDialog({ open, elapsed, onResume, onFinish }) {
   const ref = useRef(null);
   useEffect(() => {
     const dialog = ref.current;
-    if (open && !dialog.open) dialog.showModal();
+    if (open && !dialog.open) dialog.show();
     if (!open && dialog.open) dialog.close();
   }, [open]);
 
@@ -200,11 +199,21 @@ function App() {
         <span className="track-label">Rozzo · {sound.track.label}</span>
         {sound.failed && <span className="track-label" id="music-status">Tap Sound to start music</span>}
       </div>
-      <div className="mast-actions">
-        <CenterUnderline className="stream-link" href="https://album.link/lemartini" target="_blank" rel="noopener"
-          aria-label="Listen on streaming">Listen<span className="stream-detail"> on streaming</span> <span aria-hidden="true">↗</span></CenterUnderline>
-        <button id="next-track" className="quiet next-track" type="button" onClick={sound.next} disabled={phase !== "game" || paused} aria-label="Play next track" title="Play next track">Next Track <span aria-hidden="true">⏭</span></button>
-        <button id="sound" className="quiet" aria-pressed={sound.soundOn} onClick={sound.toggle}>Sound {sound.soundOn ? "on" : "off"}</button>
+      <div className="mast-actions compact-controls">
+        <button id="transport" className="icon-button" type="button" onClick={() => paused ? resume() : pause()}
+          disabled={phase !== "game"} aria-label={paused ? "Resume shift" : "Pause shift"}
+          title={paused ? "Resume shift" : "Pause shift"}>
+          <span className={paused ? "ui-icon icon-play" : "ui-icon icon-pause"} aria-hidden="true" />
+        </button>
+        <button id="next-track" className="icon-button" type="button" onClick={sound.next}
+          disabled={phase !== "game" || paused} aria-label="Next track" title="Next track">
+          <span className="ui-icon icon-next" aria-hidden="true" />
+        </button>
+        <button id="sound" className="icon-button" type="button" onClick={sound.toggle}
+          aria-pressed={sound.soundOn} aria-label={sound.soundOn ? "Sound on" : "Sound off"}
+          title={sound.soundOn ? "Sound on" : "Sound off"}>
+          <span className={sound.soundOn ? "ui-icon icon-volume" : "ui-icon icon-muted"} aria-hidden="true" />
+        </button>
       </div>
     </header>
     {phase === "intro" && <motion.section id="intro" className="intro" {...appear}>
@@ -216,6 +225,9 @@ function App() {
           <button className="primary" id="start" onClick={start}>Open the bar <span aria-hidden="true">↗</span></button>
           <button className="quiet" data-leaderboard onClick={showRanking}>Leaderboard</button>
         </div>
+        <CenterUnderline className="intro-listen" href="https://album.link/lemartini" target="_blank" rel="noopener">
+          Listen on streaming ↗
+        </CenterUnderline>
         {best > 0 && <p className="best">Longest shift · {formatShiftTime(best)}</p>}
       </div>
       <figure className="poster"><img src={barAssets.cover} alt="Rozzo · Le Martini single cover"
